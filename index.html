@@ -158,10 +158,14 @@
 </div>
 
     <div style="background:#111b2e;border:1px solid #1e2d47;border-radius:10px;padding:12px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-        <span style="color:#6b7fa3;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Filter by Date:</span>
+        <span style="color:#6b7fa3;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Date Range:</span>
+        <input type="text" id="date-range-picker" placeholder="Select date range..." style="background:#0c1222;border:1px solid #1e2d47;border-radius:6px;padding:6px 14px;color:#e0e6f0;font-size:12px;font-weight:600;width:250px;cursor:pointer;font-family:inherit" readonly>
+        <button id="apply-date-btn" onclick="applyDateRange()" style="background:#2ecc71;color:#0c1222;border:none;padding:6px 18px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;opacity:0.4;pointer-events:none;transition:.2s">Apply</button>
+        <span style="color:#1e2d47;font-size:16px">|</span>
         <button class="date-btn active" onclick="filterDate('all',this)" style="background:#4ecdc4;color:#0c1222;border:none;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">All Dates</button>
-        <button class="date-btn" onclick="filterDate('2026-01-26',this)" style="background:#1e2d47;color:#e0e6f0;border:none;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">Jan 26, 2026</button>
-        <button class="date-btn" onclick="filterDate('2026-01-27',this)" style="background:#1e2d47;color:#e0e6f0;border:none;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">Jan 27, 2026</button>
+        <button class="date-btn" onclick="filterDate('2026-01-26',this)" style="background:#1e2d47;color:#e0e6f0;border:none;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">Jan 26</button>
+        <button class="date-btn" onclick="filterDate('2026-01-27',this)" style="background:#1e2d47;color:#e0e6f0;border:none;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">Jan 27</button>
+        <button class="date-btn" onclick="filterDate('2026-02-09',this)" style="background:#1e2d47;color:#e0e6f0;border:none;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">Feb 9</button>
         <span id="filter-count" style="color:#6b7fa3;font-size:11px;margin-left:auto"></span>
     </div>
 
