@@ -160,6 +160,8 @@
 <div style="background:#111b2e;border:1px solid #1e2d47;border-radius:10px;padding:12px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
     <span style="color:#6b7fa3;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Date Range:</span>
     <input type="text" id="date-range-picker" placeholder="Select date range..." style="background:#0c1222;border:1px solid #1e2d47;border-radius:6px;padding:6px 14px;color:#e0e6f0;font-size:12px;font-weight:600;width:250px;cursor:pointer;font-family:inherit" readonly>
+    <button id="apply-date-btn" onclick="applyDateRange()" style="background:#2ecc71;color:#0c1222;border:none;padding:6px 18px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;opacity:0.4;pointer-events:none;transition:.2s">Apply</button>
+    <span style="color:#1e2d47;font-size:16px">|</span>
     <button class="date-btn active" onclick="filterDate('all',this)" style="background:#4ecdc4;color:#0c1222;border:none;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">All Dates</button>
     <button class="date-btn" onclick="filterDate('2026-01-26',this)" style="background:#1e2d47;color:#e0e6f0;border:none;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">Jan 26</button>
     <button class="date-btn" onclick="filterDate('2026-01-27',this)" style="background:#1e2d47;color:#e0e6f0;border:none;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">Jan 27</button>
@@ -1770,6 +1772,48 @@ function filterDate(date, btn) {
     CC12.data.datasets[0].data=d.c12d;CC12.update();
 }
 
+// Apply date range from calendar picker
+window._fpSelectedDates=null;
+function applyDateRange(){
+    var dates=window._fpSelectedDates;
+    if(!dates||dates.length===0)return;
+    // Deactivate all quick-filter buttons
+    document.querySelectorAll('.date-btn').forEach(function(b){
+        b.style.background='#1e2d47';b.style.color='#e0e6f0';b.classList.remove('active');
+    });
+    if(dates.length===2){
+        var start=dates[0].toISOString().slice(0,10);
+        var end=dates[1].toISOString().slice(0,10);
+        // Filter table rows by date range
+        var rows=document.querySelectorAll('tr[data-date]');
+        var shown=0,hidden=0;
+        rows.forEach(function(row){
+            var rd=row.getAttribute('data-date');
+            if(rd>=start&&rd<=end){row.style.display='';shown++;}
+            else{row.style.display='none';hidden++;}
+        });
+        var el=document.getElementById('filter-count');
+        if(el)el.textContent='Showing '+shown+' of '+(shown+hidden)+' records';
+        // Update KPIs: single date or known range
+        if(start===end&&DD[start]){
+            var fakeBtn={style:{},classList:{add:function(){},remove:function(){}}};
+            filterDate(start,fakeBtn);
+        } else if(start==='2026-01-26'&&end==='2026-01-27'){
+            var fakeBtn={style:{},classList:{add:function(){},remove:function(){}}};
+            filterDate('all',fakeBtn);
+        }
+    } else if(dates.length===1){
+        var d=dates[0].toISOString().slice(0,10);
+        if(DD[d]){
+            var fakeBtn={style:{},classList:{add:function(){},remove:function(){}}};
+            filterDate(d,fakeBtn);
+        }
+    }
+    // Disable Apply button after applying
+    var btn=document.getElementById('apply-date-btn');
+    btn.style.opacity='0.4';btn.style.pointerEvents='none';
+}
+
 // Initialize flatpickr calendar
 flatpickr('#date-range-picker',{
     mode:'range',
@@ -1783,42 +1827,13 @@ flatpickr('#date-range-picker',{
         '2026-02-09'
     ],
     onChange:function(dates,dateStr){
-        if(dates.length===2){
-            var start=dates[0].toISOString().slice(0,10);
-            var end=dates[1].toISOString().slice(0,10);
-            // Deactivate all date buttons
-            document.querySelectorAll('.date-btn').forEach(function(b){
-                b.style.background='#1e2d47';b.style.color='#e0e6f0';b.classList.remove('active');
-            });
-            // Filter rows based on range
-            var rows=document.querySelectorAll('tr[data-date]');
-            var shown=0,hidden=0;
-            rows.forEach(function(row){
-                var rd=row.getAttribute('data-date');
-                if(rd>=start&&rd<=end){row.style.display='';shown++;}
-                else{row.style.display='none';hidden++;}
-            });
-            var el=document.getElementById('filter-count');
-            if(el)el.textContent='Showing '+shown+' of '+(shown+hidden)+' records';
-            // If range covers only specific date, use that date's data
-            if(start===end){
-                if(DD[start]){
-                    var fakeBtn={style:{},classList:{add:function(){},remove:function(){}}};
-                    filterDate(start,fakeBtn);
-                }
-            } else if(start==='2026-01-26'&&end==='2026-01-27'){
-                var fakeBtn={style:{},classList:{add:function(){},remove:function(){}}};
-                filterDate('all',fakeBtn);
-            }
-        } else if(dates.length===1){
-            var d=dates[0].toISOString().slice(0,10);
-            if(DD[d]){
-                document.querySelectorAll('.date-btn').forEach(function(b){
-                    b.style.background='#1e2d47';b.style.color='#e0e6f0';b.classList.remove('active');
-                });
-                var fakeBtn={style:{},classList:{add:function(){},remove:function(){}}};
-                filterDate(d,fakeBtn);
-            }
+        var btn=document.getElementById('apply-date-btn');
+        if(dates.length>=1){
+            window._fpSelectedDates=dates;
+            btn.style.opacity='1';btn.style.pointerEvents='auto';
+        } else {
+            window._fpSelectedDates=null;
+            btn.style.opacity='0.4';btn.style.pointerEvents='none';
         }
     }
 });
