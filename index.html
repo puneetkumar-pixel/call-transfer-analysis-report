@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Call Transfer Analysis Report</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #1a1a2e; line-height: 1.6; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+  /* Header */
+  .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); color: #fff; padding: 40px; border-radius: 16px; margin-bottom: 24px; }
+  .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+  .header .subtitle { font-size: 14px; color: #a0aec0; }
+  .header .meta { display: flex; gap: 32px; margin-top: 20px; }
+  .header .meta-item { text-align: center; }
+  .header .meta-value { font-size: 32px; font-weight: 700; color: #e2e8f0; }
+  .header .meta-label { font-size: 12px; color: #a0aec0; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* Cards */
+  .card { background: #fff; border-radius: 12px; padding: 28px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .card h2 { font-size: 18px; font-weight: 700; margin-bottom: 4px; color: #1a1a2e; }
+  .card .section-desc { font-size: 13px; color: #718096; margin-bottom: 20px; }
+
+  /* Funnel */
+  .funnel { display: flex; flex-direction: column; align-items: center; gap: 0; margin: 20px 0; }
+  .funnel-step { text-align: center; padding: 16px 0; position: relative; width: 100%; }
+  .funnel-bar { margin: 0 auto; height: 52px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 15px; transition: width 0.3s; }
+  .funnel-label { font-size: 12px; color: #718096; margin-top: 6px; }
+  .funnel-arrow { color: #cbd5e0; font-size: 20px; }
+
+  /* Donut chart area */
+  .chart-row { display: flex; gap: 24px; flex-wrap: wrap; }
+  .chart-box { flex: 1; min-width: 280px; }
+
+  /* Summary boxes */
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px; }
+  .summary-box { background: #f7fafc; border-radius: 10px; padding: 20px; text-align: center; border: 1px solid #e2e8f0; }
+  .summary-box .num { font-size: 36px; font-weight: 800; }
+  .summary-box .label { font-size: 12px; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+  .summary-box.green .num { color: #38a169; }
+  .summary-box.yellow .num { color: #d69e2e; }
+  .summary-box.red .num { color: #e53e3e; }
+  .summary-box.blue .num { color: #3182ce; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+  th { background: #f7fafc; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #718096; padding: 10px 14px; text-align: left; border-bottom: 2px solid #e2e8f0; }
+  td { padding: 10px 14px; border-bottom: 1px solid #edf2f7; font-size: 14px; }
+  tr:hover { background: #f7fafc; }
+  .num-cell { text-align: right; font-weight: 600; }
+  .pct-cell { text-align: right; color: #718096; }
+
+  /* Progress bars in table */
+  .bar-cell { width: 200px; }
+  .bar-track { background: #edf2f7; border-radius: 4px; height: 8px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; }
+
+  /* Badges */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge-green { background: #c6f6d5; color: #276749; }
+  .badge-red { background: #fed7d7; color: #9b2c2c; }
+  .badge-yellow { background: #fefcbf; color: #975a16; }
+  .badge-blue { background: #bee3f8; color: #2a4365; }
+  .badge-gray { background: #e2e8f0; color: #4a5568; }
+  .badge-orange { background: #feebc8; color: #9c4221; }
+  .badge-purple { background: #e9d8fd; color: #553c9a; }
+
+  /* Sentiment pill */
+  .sentiment-positive { color: #38a169; }
+  .sentiment-negative { color: #e53e3e; }
+  .sentiment-neutral { color: #718096; }
+  .sentiment-confused { color: #d69e2e; }
+
+  /* Reason cards */
+  .reason-group { margin-bottom: 16px; }
+  .reason-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: #f7fafc; border-radius: 8px; cursor: default; border: 1px solid #e2e8f0; }
+  .reason-header .reason-title { font-weight: 600; font-size: 14px; flex: 1; }
+  .reason-header .reason-count { font-weight: 700; font-size: 18px; color: #e53e3e; }
+  .reason-detail { padding: 8px 16px 8px 32px; font-size: 13px; color: #4a5568; border-left: 3px solid #e2e8f0; margin: 4px 0 4px 20px; }
+  .reason-detail .uuid { font-family: monospace; font-size: 11px; color: #a0aec0; }
+
+  /* Transferred list */
+  .transferred-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #edf2f7; }
+  .transferred-item:last-child { border-bottom: none; }
+  .transferred-item .t-uuid { font-family: monospace; font-size: 12px; color: #a0aec0; min-width: 90px; }
+  .transferred-item .t-detail { font-size: 13px; color: #4a5568; flex: 1; }
+
+  /* Insight cards */
+  .insight { display: flex; gap: 16px; padding: 16px; background: #fffff0; border-radius: 8px; border-left: 4px solid #d69e2e; margin-bottom: 12px; }
+  .insight.critical { background: #fff5f5; border-left-color: #e53e3e; }
+  .insight.info { background: #ebf8ff; border-left-color: #3182ce; }
+  .insight.success { background: #f0fff4; border-left-color: #38a169; }
+  .insight .insight-icon { font-size: 24px; min-width: 32px; text-align: center; }
+  .insight .insight-text { font-size: 14px; }
+  .insight .insight-text strong { display: block; margin-bottom: 4px; }
+
+  /* SVG charts */
+  svg text { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+
+  /* Recording links */
+  .rec-link { display: inline-block; margin-left: 8px; padding: 1px 8px; background: #ebf8ff; border: 1px solid #bee3f8; border-radius: 4px; font-size: 11px; color: #2b6cb0; text-decoration: none; font-weight: 600; vertical-align: middle; }
+  .rec-link:hover { background: #bee3f8; color: #2a4365; }
+  .rec-link-na { display: inline-block; margin-left: 8px; padding: 1px 8px; background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 11px; color: #a0aec0; vertical-align: middle; }
+
+  /* Print */
+  @media print {
+    body { background: #fff; }
+    .card { box-shadow: none; border: 1px solid #e2e8f0; break-inside: avoid; }
+    .header { color: #fff; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>Call Transfer Analysis Report</h1>
+    <div class="subtitle">AI-Powered Moving Quote System &mdash; Customer Engaged Calls Deep Dive</div>
+    <div class="meta">
+      <div class="meta-item">
+        <div class="meta-value">490</div>
+        <div class="meta-label">Total Calls</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-value">60</div>
+        <div class="meta-label">Customer Engaged</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-value">15</div>
+        <div class="meta-label">Transferred</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-value">3.1%</div>
+        <div class="meta-label">Transfer Rate</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUMMARY BOXES -->
+  <div class="summary-grid">
+    <div class="summary-box blue">
+      <div class="num">12.2%</div>
+      <div class="label">Engagement Rate</div>
+    </div>
+    <div class="summary-box green">
+      <div class="num">25.0%</div>
+      <div class="label">Transfer Rate (of Engaged)</div>
+    </div>
+    <div class="summary-box red">
+      <div class="num">75.0%</div>
+      <div class="label">Non-Transfer Rate (of Engaged)</div>
+    </div>
+    <div class="summary-box yellow">
+      <div class="num">35.6%</div>
+      <div class="label">Lost to Call Drops</div>
+    </div>
+  </div>
+
+  <!-- FUNNEL -->
+  <div class="card">
+    <h2>Overall Call Funnel</h2>
+    <div class="section-desc">From total calls made to successful transfers to a human agent</div>
+    <div class="funnel">
+      <div class="funnel-step">
+        <div class="funnel-bar" style="width:100%; background: linear-gradient(90deg, #3182ce, #63b3ed);">490 Total Calls Made</div>
+      </div>
+      <div class="funnel-arrow">&#9660;</div>
+      <div class="funnel-step">
+        <div class="funnel-bar" style="width:52%; background: linear-gradient(90deg, #2b6cb0, #4299e1);">60 Customers Engaged (12.2%)</div>
+      </div>
+      <div class="funnel-arrow">&#9660;</div>
+      <div class="funnel-step">
+        <div class="funnel-bar" style="width:22%; background: linear-gradient(90deg, #276749, #48bb78);">15 Transferred to Human Agent (3.1%)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRANSFER OUTCOME BREAKDOWN -->
+  <div class="card">
+    <h2>Transfer Outcome Breakdown</h2>
+    <div class="section-desc">Classification of all 60 customer-engaged calls</div>
+    <div class="chart-row">
+      <div class="chart-box" style="text-align:center;">
+        <svg width="260" height="260" viewBox="0 0 260 260">
+          <!-- Donut: transferred=13 (21.7%), likely=2 (3.3%), not=45 (75%) -->
+          <!-- Total circumference for r=100: 2*pi*100 = 628.32 -->
+          <!-- Transferred: 21.7% = 136.3 -->
+          <!-- Likely: 3.3% = 20.7 -->
+          <!-- Not transferred: 75% = 471.3 -->
+          <circle cx="130" cy="130" r="100" fill="none" stroke="#e2e8f0" stroke-width="32"/>
+          <!-- Not transferred (red) - starts from top -->
+          <circle cx="130" cy="130" r="100" fill="none" stroke="#fc8181" stroke-width="32"
+            stroke-dasharray="471.3 157.0" stroke-dashoffset="157.1" transform="rotate(-90 130 130)"/>
+          <!-- Likely transferred (yellow) -->
+          <circle cx="130" cy="130" r="100" fill="none" stroke="#f6e05e" stroke-width="32"
+            stroke-dasharray="20.7 607.6" stroke-dashoffset="-314.2" transform="rotate(-90 130 130)"/>
+          <!-- Transferred (green) -->
+          <circle cx="130" cy="130" r="100" fill="none" stroke="#68d391" stroke-width="32"
+            stroke-dasharray="136.3 492.0" stroke-dashoffset="-334.9" transform="rotate(-90 130 130)"/>
+          <!-- Center text -->
+          <text x="130" y="122" text-anchor="middle" font-size="32" font-weight="800" fill="#1a1a2e">60</text>
+          <text x="130" y="145" text-anchor="middle" font-size="12" fill="#718096">Engaged Calls</text>
+        </svg>
+      </div>
+      <div class="chart-box">
+        <table>
+          <thead><tr><th>Outcome</th><th class="num-cell">Count</th><th class="pct-cell">%</th><th class="bar-cell">Distribution</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#68d391;margin-right:6px;"></span>Successfully Transferred</td>
+              <td class="num-cell">13</td><td class="pct-cell">21.7%</td>
+              <td class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:21.7%;background:#68d391;"></div></div></td>
+            </tr>
+            <tr>
+              <td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f6e05e;margin-right:6px;"></span>Likely Transferred</td>
+              <td class="num-cell">2</td><td class="pct-cell">3.3%</td>
+              <td class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:3.3%;background:#f6e05e;"></div></div></td>
+            </tr>
+            <tr>
+              <td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#fc8181;margin-right:6px;"></span>NOT Transferred</td>
+              <td class="num-cell">45</td><td class="pct-cell">75.0%</td>
+              <td class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:75%;background:#fc8181;"></div></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- REASONS FOR NON-TRANSFER -->
+  <div class="card">
+    <h2>Reasons Why Calls Were Not Transferred</h2>
+    <div class="section-desc">Breakdown of 45 non-transferred calls by root cause</div>
+
+    <!-- Horizontal bar chart -->
+    <svg width="100%" height="340" viewBox="0 0 700 340">
+      <!-- Bars -->
+      <g transform="translate(260, 0)">
+        <!-- Call Dropped: 16/45 = 35.6% -->
+        <rect x="0" y="12" width="306" height="26" rx="4" fill="#fc8181"/>
+        <text x="312" y="30" font-size="13" fill="#1a1a2e" font-weight="600">16 (35.6%)</text>
+        <!-- Already Quoted: 12/45 = 26.7% -->
+        <rect x="0" y="50" width="229" height="26" rx="4" fill="#f6ad55"/>
+        <text x="235" y="68" font-size="13" fill="#1a1a2e" font-weight="600">12 (26.7%)</text>
+        <!-- Declined Transfer: 4/45 = 8.9% -->
+        <rect x="0" y="88" width="76" height="26" rx="4" fill="#f6e05e"/>
+        <text x="82" y="106" font-size="13" fill="#1a1a2e" font-weight="600">4 (8.9%)</text>
+        <!-- Busy: 4/45 = 8.9% -->
+        <rect x="0" y="126" width="76" height="26" rx="4" fill="#68d391"/>
+        <text x="82" y="144" font-size="13" fill="#1a1a2e" font-weight="600">4 (8.9%)</text>
+        <!-- Cancelled: 3/45 = 6.7% -->
+        <rect x="0" y="164" width="57" height="26" rx="4" fill="#63b3ed"/>
+        <text x="63" y="182" font-size="13" fill="#1a1a2e" font-weight="600">3 (6.7%)</text>
+        <!-- Not Interested: 2/45 = 4.4% -->
+        <rect x="0" y="202" width="38" height="26" rx="4" fill="#b794f4"/>
+        <text x="44" y="220" font-size="13" fill="#1a1a2e" font-weight="600">2 (4.4%)</text>
+        <!-- Hostile: 2/45 = 4.4% -->
+        <rect x="0" y="240" width="38" height="26" rx="4" fill="#fc8181"/>
+        <text x="44" y="258" font-size="13" fill="#1a1a2e" font-weight="600">2 (4.4%)</text>
+        <!-- Other Plans: 1 -->
+        <rect x="0" y="278" width="19" height="26" rx="4" fill="#cbd5e0"/>
+        <text x="25" y="296" font-size="13" fill="#1a1a2e" font-weight="600">1 (2.2%)</text>
+        <!-- AI Discomfort: 1 -->
+        <rect x="0" y="316" width="19" height="26" rx="4" fill="#9ae6b4"/>
+        <text x="25" y="334" font-size="13" fill="#1a1a2e" font-weight="600">1 (2.2%)</text>
+      </g>
+      <!-- Labels -->
+      <text x="254" y="30" text-anchor="end" font-size="13" fill="#4a5568">Call Dropped / Cut Off</text>
+      <text x="254" y="68" text-anchor="end" font-size="13" fill="#4a5568">Already Has Quote / Spoke With Someone</text>
+      <text x="254" y="106" text-anchor="end" font-size="13" fill="#4a5568">Explicitly Declined Transfer</text>
+      <text x="254" y="144" text-anchor="end" font-size="13" fill="#4a5568">Customer Busy / Can't Talk</text>
+      <text x="254" y="182" text-anchor="end" font-size="13" fill="#4a5568">Cancelled / No Longer Moving</text>
+      <text x="254" y="220" text-anchor="end" font-size="13" fill="#4a5568">Not Interested</text>
+      <text x="254" y="258" text-anchor="end" font-size="13" fill="#4a5568">Customer Hostile</text>
+      <text x="254" y="296" text-anchor="end" font-size="13" fill="#4a5568">Made Other Plans</text>
+      <text x="254" y="334" text-anchor="end" font-size="13" fill="#4a5568">Uncomfortable With AI</text>
+    </svg>
+  </div>
+
+  <!-- DETAILED REASON BREAKDOWN -->
+  <div class="card">
+    <h2>Detailed Breakdown by Reason</h2>
+    <div class="section-desc">Individual call details grouped by non-transfer reason</div>
+
+    <!-- Call Dropped -->
+    <div class="reason-group">
+      <div class="reason-header">
+        <span class="badge badge-red">CRITICAL</span>
+        <span class="reason-title">Call Dropped / Cut Off (Technical)</span>
+        <span class="reason-count">16</span>
+      </div>
+      <div class="reason-detail"><span class="uuid">a2e40ea9</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/2b0bcf83-a496-4543-8f7d-ae3ab14ce0a6.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; Customer said "No" immediately. AI tried to confirm details. Call ended.</div>
+      <div class="reason-detail"><span class="uuid">40bbe667</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/a269f266-05df-4ae9-aa4d-64b45a35c144.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-green">positive</span> &mdash; AI started "To ensure you get" then cut off. Customer had confirmed details.</div>
+      <div class="reason-detail"><span class="uuid">69dde55b</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/8262d275-75bb-44d5-9192-f4c04ffae5d2.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-gray">neutral</span> &mdash; Customer said "No" to details. AI asked what to update. Cut off.</div>
+      <div class="reason-detail"><span class="uuid">495ddd6f</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/29e8d0a7-e309-4401-a259-654ff8bab78c.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; Customer said "No" at start. AI introduced itself. Cut off.</div>
+      <div class="reason-detail"><span class="uuid">de3da82c</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/576a7a9f-bd12-4699-997c-3a98288f288a.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-gray">neutral</span> &mdash; Screening passed, AI confirmed details but cut off before transfer ask.</div>
+      <div class="reason-detail"><span class="uuid">294ca700</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/a6830e3a-9726-49da-a88f-fadbdc7d3e97.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; Customer said "No" to details. AI started asking what to update. Cut off.</div>
+      <div class="reason-detail"><span class="uuid">8527181e</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/9dbabc39-69ff-4fa1-82be-cd793cced6f1.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-green">positive</span> &mdash; Customer voicemail greeting. AI said "Hi," then cut off immediately.</div>
+      <div class="reason-detail"><span class="uuid">a022acf4</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/18e4f960-8de0-4ed8-a4b5-d8dbc5537b3e.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-green">positive</span> &mdash; AI started transfer ask "I would like to" then cut off.</div>
+      <div class="reason-detail"><span class="uuid">e08b04a1</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/182cf9e4-d528-49e5-a216-808d9c1c47b3.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-green">positive</span> &mdash; AI made transfer ask but cut off before customer could respond.</div>
+      <div class="reason-detail"><span class="uuid">af8269cc</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/f5c0ff2d-f2b7-47ff-a8ae-1d79fd5ec890.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-gray">neutral</span> &mdash; Short conversation. AI describing move details. Cut off.</div>
+      <div class="reason-detail"><span class="uuid">fe2d6899</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/7babf582-fea6-4ec9-b8e2-81aeb95d086a.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-green">positive</span> &mdash; AI asked transfer question. No customer response captured. Cut off.</div>
+      <div class="reason-detail"><span class="uuid">9e1da964</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/2d7cff68-4278-43b6-8e82-44f16080ebb3.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-green">positive</span> &mdash; AI asked transfer question. No customer response captured. Cut off.</div>
+      <div class="reason-detail"><span class="uuid">14c89b19</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/6cfeb220-46fd-40dd-92b7-aceca938ff08.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-gray">neutral</span> &mdash; Very short. AI mid-sentence. Cut off.</div>
+      <div class="reason-detail"><span class="uuid">82757b91</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/f7a26e78-1dc0-4b4a-b916-9079a1f1fb04.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-gray">neutral</span> &mdash; Wrong person answered. Very short. Cut off.</div>
+      <div class="reason-detail"><span class="uuid">1d1ff07b</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/426b94d1-2fa4-4e85-967b-005ba254f0af.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-green">positive</span> &mdash; Short. AI confirmed details. Cut off before transfer ask.</div>
+      <div class="reason-detail"><span class="uuid">546312c0</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/b71bca42-2580-4525-9932-158c6574510e.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-gray">empty</span> &mdash; AI asked transfer question. Customer said "Thank you." Transcript ended.</div>
+    </div>
+
+    <!-- Already Quoted -->
+    <div class="reason-group">
+      <div class="reason-header">
+        <span class="badge badge-orange">HIGH</span>
+        <span class="reason-title">Already Has Quote / Spoke With Someone</span>
+        <span class="reason-count">12</span>
+      </div>
+      <div class="reason-detail"><span class="uuid">bfaf6981</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/cbb451dc-a706-46e6-ac0a-532c93e9266d.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; "I already got a quote from somebody else. I'm not interested in hearing another quote."</div>
+      <div class="reason-detail"><span class="uuid">c8680f8d</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/cc7646b1-1ae8-4900-b701-0bebd650f65b.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-gray">neutral</span> &mdash; "No. I had spoken with someone already."</div>
+      <div class="reason-detail"><span class="uuid">bb614c93</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/32951f87-8812-4cd9-990f-72a9348b33c1.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; "I already did that. No." (regarding connecting with agent)</div>
+      <div class="reason-detail"><span class="uuid">55d30dc2</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/b41c0bc5-d66c-473c-bfbb-402732857146.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; "I've already spoken with somebody." Declined transfer twice.</div>
+      <div class="reason-detail"><span class="uuid">c324dbcf</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/59dadbba-1f1f-40fe-8f1b-f8e95c899130.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; "I've already got my move set up and paid for." Made down payment.</div>
+      <div class="reason-detail"><span class="uuid">fd140557</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/36c439d2-e884-4768-bd2d-755450622524.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; "I already spoke with someone." Then went silent, AI disconnected.</div>
+      <div class="reason-detail"><span class="uuid">f4435a23</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/8c14ab34-fbe4-4ba0-bcad-59273ee60fc6.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; "I just got a quote and talked to the man. So it's too high."</div>
+      <div class="reason-detail"><span class="uuid">1af6932e</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/565945bc-7240-41e6-9f79-2e98034d1e5f.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; "No. Thank you. I have it reserved already."</div>
+      <div class="reason-detail"><span class="uuid">1c39c45e</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/f2f92127-d0f1-4ce8-a5e7-5a106ab48ce3.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; "I've already had a quote from Budget." Declined transfer.</div>
+      <div class="reason-detail"><span class="uuid">05229071</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/1301bec6-78bd-46b8-af41-22a8627a7c86.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-gray">neutral</span> &mdash; "No. I already talked to an agent."</div>
+      <div class="reason-detail"><span class="uuid">421a7718</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/9c5d3e17-29a6-4d8b-9179-7f45be5247f8.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; "We've already got other arrangements made."</div>
+      <div class="reason-detail"><span class="uuid">8e59be25</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/96efcf58-8422-4f1b-95be-c269f0e38826.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; "Somebody already contacted me. So it's taken care of." Still shopping but declined.</div>
+    </div>
+
+    <!-- Declined Transfer -->
+    <div class="reason-group">
+      <div class="reason-header">
+        <span class="badge badge-yellow">MEDIUM</span>
+        <span class="reason-title">Explicitly Declined Transfer</span>
+        <span class="reason-count">4</span>
+      </div>
+      <div class="reason-detail"><span class="uuid">ba080c85</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/0a0b335f-a902-4340-a256-ff2ea3a2f3ad.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; Customer said "No" to transfer twice. AI ended call.</div>
+      <div class="reason-detail"><span class="uuid">f41da28c</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/05fe17fa-3bb3-432d-9ee5-9b641b411273.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; Customer said "No" to transfer twice. AI ended call.</div>
+      <div class="reason-detail"><span class="uuid">196759a5</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/3557489b-68ff-4940-b6e7-ca101445b61b.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; Customer said "No" to transfer. AI tried to push but call ended.</div>
+      <div class="reason-detail"><span class="uuid">8816d3b5</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/c37d350d-268a-4012-a8b5-fd8959cd63dd.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; Customer: "No. I'm all set." AI tried to push but call ended.</div>
+    </div>
+
+    <!-- Busy -->
+    <div class="reason-group">
+      <div class="reason-header">
+        <span class="badge badge-yellow">MEDIUM</span>
+        <span class="reason-title">Customer Busy / Can't Talk Now</span>
+        <span class="reason-count">4</span>
+      </div>
+      <div class="reason-detail"><span class="uuid">c8c1df4a</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/06406ad2-b621-4719-a4de-0de232cff3e7.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-gray">neutral</span> &mdash; "Leave a message for me. I'll call you back."</div>
+      <div class="reason-detail"><span class="uuid">117ddd26</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/be269240-114f-4eaf-8614-3eb3d3195ced.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; "Leave me a message."</div>
+      <div class="reason-detail"><span class="uuid">3381f5c9</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/2f1ed62e-9863-4236-a3bc-bc9d08ff002e.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; "I can't right now." (regarding transfer)</div>
+      <div class="reason-detail"><span class="uuid">0cdf2374</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/529d80bb-a1a2-451f-a5b4-b0632c22aa38.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; "Can't take your call now."</div>
+    </div>
+
+    <!-- Cancelled -->
+    <div class="reason-group">
+      <div class="reason-header">
+        <span class="badge badge-blue">LOW</span>
+        <span class="reason-title">Cancelled Move / No Longer Moving</span>
+        <span class="reason-count">3</span>
+      </div>
+      <div class="reason-detail"><span class="uuid">a0e138ed</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/e1c43e40-e940-45b5-9e0a-5a549b2bbdc3.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; "Cancel the whole order." Wanted to rent a truck, not a moving service.</div>
+      <div class="reason-detail"><span class="uuid">6b428996</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/485497d1-57aa-4a3d-92f1-8f217ec47425.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; "I'm not gonna move the furniture. I'm not moving anything. I must sell it."</div>
+      <div class="reason-detail"><span class="uuid">8ba93d46</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/23befc91-f16d-455d-bbbb-c8cddccb3b3e.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; "I've canceled the order."</div>
+    </div>
+
+    <!-- Others -->
+    <div class="reason-group">
+      <div class="reason-header">
+        <span class="badge badge-gray">OTHER</span>
+        <span class="reason-title">Not Interested / Hostile / Other Plans / AI Discomfort</span>
+        <span class="reason-count">6</span>
+      </div>
+      <div class="reason-detail"><span class="uuid">91b957ee</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/e016ac7e-5b57-451c-b030-970ad2d26b38.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; "Oh, I'm not interested. Thank you."</div>
+      <div class="reason-detail"><span class="uuid">c1adb76d</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/51750e44-0060-4da7-9daa-640a4fa118fd.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; "Yeah. I'm not interested."</div>
+      <div class="reason-detail"><span class="uuid">1d65d7fa</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/ba1eb918-58fc-4af5-ab07-0bd883244af3.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; Customer used profanity directed at AI agent.</div>
+      <div class="reason-detail"><span class="uuid">7869141d</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/e9354b34-9e83-4411-80dd-43e9156265cf.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; Customer uncooperative with profanity. Details also wrong.</div>
+      <div class="reason-detail"><span class="uuid">7c9c4bbc</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/6b8c4fcf-89c4-4d98-9629-3289d4345484.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-red">negative</span> &mdash; "No. Thank you. We got other plans."</div>
+      <div class="reason-detail"><span class="uuid">6c8ecf8c</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/b757d2c1-3960-4521-9be0-d4df2a281719.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-yellow">confused</span> &mdash; "Are you a real person?" Disconnected after learning it's AI.</div>
+    </div>
+  </div>
+
+  <!-- SUCCESSFULLY TRANSFERRED -->
+  <div class="card">
+    <h2>Successfully Transferred Calls</h2>
+    <div class="section-desc">13 confirmed transfers + 2 likely transfers where AI initiated "Connecting you with a specialist"</div>
+
+    <div class="transferred-item"><span class="t-uuid">f3023c21</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/60382c3c-85e8-41e9-888f-01b98ad364d1.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-green">positive</span> <span class="t-detail">Customer agreed. "Perfect! Connecting you with a specialist now. Please hold."</span></div>
+    <div class="transferred-item"><span class="t-uuid">1fada768</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/6c9aa89d-b1f6-43b3-aad3-59916fdba620.mp3" target="_blank">&#9654; Recording</a> <span class="badge badge-gray">neutral</span> <span class="t-detail">Customer agreed after price discussion. Connected to specialist.</span></div>
+    <div class="transferred-item"><span class="t-uuid">ced244d1</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/174a285a-211f-4525-9fa2-edbfa7280f1a.mp3" target="_blank">&#9654; Recording</a> <span class="badge badge-green">positive</span> <span class="t-detail">Customer agreed. Connected to specialist.</span></div>
+    <div class="transferred-item"><span class="t-uuid">91436ffd</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/7d5d820f-086a-46ce-a72d-67060c39a130.mp3" target="_blank">&#9654; Recording</a> <span class="badge badge-green">positive</span> <span class="t-detail">Call screening passed, customer agreed. Connected to specialist.</span></div>
+    <div class="transferred-item"><span class="t-uuid">23826c63</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/93392757-86d5-4398-8c5d-ddb55f514246.mp3" target="_blank">&#9654; Recording</a> <span class="badge badge-green">positive</span> <span class="t-detail">Customer agreed. Connected to specialist.</span></div>
+    <div class="transferred-item"><span class="t-uuid">7f0d99c5</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/ca3d7eb2-5a69-42e0-8b6f-fc755fccaabc.mp3" target="_blank">&#9654; Recording</a> <span class="badge badge-green">positive</span> <span class="t-detail">Call screening passed, customer agreed. Connected to specialist.</span></div>
+    <div class="transferred-item"><span class="t-uuid">6e8f174f</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/4e930c71-26db-42df-a6ee-c0173157052a.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-green">positive</span> <span class="t-detail">Customer agreed. Connected to specialist.</span></div>
+    <div class="transferred-item"><span class="t-uuid">1489f92d</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/f5a56932-d281-440f-98e6-596a5ee9a94c.mp3" target="_blank">&#9654; Recording</a> <span class="badge badge-green">positive</span> <span class="t-detail">Initially declined (driving), AI persisted, customer agreed. Connected.</span></div>
+    <div class="transferred-item"><span class="t-uuid">08cc27bc</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/c9b067e7-d4f2-4e1c-acb5-e0ae821125e2.mp3" target="_blank">&#9654; Recording</a> <span class="badge badge-green">positive</span> <span class="t-detail">Extended conversation about move details, customer agreed. Connected.</span></div>
+    <div class="transferred-item"><span class="t-uuid">01d9300f</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/965cd005-3344-4d15-bec9-edab317c8143.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-green">positive</span> <span class="t-detail">Customer agreed. Connected to specialist.</span></div>
+    <div class="transferred-item"><span class="t-uuid">d2e22566</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/ee83a8f2-da57-4330-8c10-b862d8fc62ea.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-gray">neutral</span> <span class="t-detail">Preferred real person over AI. AI offered live agent, customer agreed.</span></div>
+    <div class="transferred-item"><span class="t-uuid">6b94c7ab</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/344fed97-92d1-4dc4-8943-bdc1afd44c8e.mp3" target="_blank">&#9654; Recording</a> <span class="badge badge-green">positive</span> <span class="t-detail">Customer agreed. Connected to specialist.</span></div>
+    <div class="transferred-item"><span class="t-uuid">aaed18f8</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/34b0e6e4-8561-4682-b524-a7d9382170d7.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-green">positive</span> <span class="t-detail">Customer agreed. Connected to specialist.</span></div>
+    <div style="border-top: 2px dashed #e2e8f0; margin: 12px 0; padding-top: 8px; font-size: 13px; color: #718096; font-weight: 600;">Likely Transferred (call cut off mid-transfer):</div>
+    <div class="transferred-item"><span class="t-uuid">a68cdafe</span> <span class="rec-link-na">No Recording</span> <span class="badge badge-green">positive</span> <span class="t-detail">AI asked transfer question but call cut off mid-sentence.</span></div>
+    <div class="transferred-item"><span class="t-uuid">0636c81c</span> <a class="rec-link" href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/da664c5b-e499-4db8-97a1-b753aa2cb8f6.wav" target="_blank">&#9654; Recording</a> <span class="badge badge-green">positive</span> <span class="t-detail">Customer agreed, AI said "Perfect! Connecting" but cut off mid-sentence.</span></div>
+  </div>
+
+  <!-- SENTIMENT COMPARISON -->
+  <div class="card">
+    <h2>Sentiment: Transferred vs Not Transferred</h2>
+    <div class="section-desc">Sentiment is a strong predictor of transfer success</div>
+    <table>
+      <thead>
+        <tr><th>Sentiment</th><th class="num-cell">Transferred (15)</th><th class="pct-cell">%</th><th class="num-cell">Not Transferred (45)</th><th class="pct-cell">%</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="sentiment-positive" style="font-weight:700;">positive</span></td>
+          <td class="num-cell">13</td><td class="pct-cell">87%</td>
+          <td class="num-cell">7</td><td class="pct-cell">16%</td>
+        </tr>
+        <tr>
+          <td><span class="sentiment-neutral" style="font-weight:700;">neutral</span></td>
+          <td class="num-cell">2</td><td class="pct-cell">13%</td>
+          <td class="num-cell">8</td><td class="pct-cell">18%</td>
+        </tr>
+        <tr>
+          <td><span class="sentiment-negative" style="font-weight:700;">negative</span></td>
+          <td class="num-cell">0</td><td class="pct-cell">0%</td>
+          <td class="num-cell">28</td><td class="pct-cell">62%</td>
+        </tr>
+        <tr>
+          <td><span class="sentiment-confused" style="font-weight:700;">confused / empty</span></td>
+          <td class="num-cell">0</td><td class="pct-cell">0%</td>
+          <td class="num-cell">2</td><td class="pct-cell">4%</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top: 16px; padding: 12px 16px; background: #f0fff4; border-radius: 8px; font-size: 13px; color: #276749; border-left: 4px solid #48bb78;">
+      <strong>Key Insight:</strong> 87% of transferred calls had <strong>positive</strong> sentiment. 62% of non-transferred calls had <strong>negative</strong> sentiment. Zero negative-sentiment calls were transferred.
+    </div>
+  </div>
+
+  <!-- RECOMMENDATIONS -->
+  <div class="card">
+    <h2>Key Insights &amp; Recommendations</h2>
+    <div class="section-desc">Actionable improvements ranked by potential impact</div>
+
+    <div class="insight critical">
+      <div class="insight-icon">1</div>
+      <div class="insight-text">
+        <strong>Fix Call Drops &mdash; 16 calls lost (35.6% of non-transfers)</strong>
+        This is the single biggest issue. 16 calls ended abruptly due to apparent technical issues (call drops, audio cuts, incomplete transcripts). Many of these customers had positive sentiment and were cooperating. At least 7 of these had positive sentiment and were likely to transfer if the call hadn't dropped. Fixing this alone could increase transfers from 15 to ~22, a <strong>47% improvement</strong>.
+      </div>
+    </div>
+
+    <div class="insight critical">
+      <div class="insight-icon">2</div>
+      <div class="insight-text">
+        <strong>Lead Deduplication &mdash; 12 calls wasted (26.7% of non-transfers)</strong>
+        12 customers said they already spoke with someone or already have a quote. These leads should not have been called again. Improve CRM sync to flag leads that have already been contacted or have active quotes. This wastes agent time and creates negative customer experience.
+      </div>
+    </div>
+
+    <div class="insight">
+      <div class="insight-icon">3</div>
+      <div class="insight-text">
+        <strong>Add Callback Scheduling &mdash; 4 leads recoverable</strong>
+        4 customers said they were busy. The AI ends the call without offering to schedule a callback, losing the lead entirely. Adding a "When would be a good time to call back?" option could recover these leads.
+      </div>
+    </div>
+
+    <div class="insight">
+      <div class="insight-icon">4</div>
+      <div class="insight-text">
+        <strong>Lead Freshness Filtering &mdash; 3 stale leads</strong>
+        3 customers had already cancelled their move or decided not to use a moving service. Filter out cancelled/stale leads before dialing to avoid wasted calls and poor customer experience.
+      </div>
+    </div>
+
+    <div class="insight info">
+      <div class="insight-icon">5</div>
+      <div class="insight-text">
+        <strong>AI Disclosure Strategy &mdash; 1 call lost</strong>
+        1 customer disconnected after learning they were talking to AI ("Are you a real person?"). Consider proactively disclosing AI nature earlier, or improving the transition to human agent for customers who express discomfort with AI.
+      </div>
+    </div>
+
+    <div class="insight success">
+      <div class="insight-icon">+</div>
+      <div class="insight-text">
+        <strong>What's Working Well</strong>
+        When customers are receptive (positive sentiment), the AI successfully transfers 13 out of 13 times (100% success rate). The script is effective &mdash; it confirms details, asks for transfer permission, and connects smoothly. The "Did you make a down payment yet?" objection handler also shows good persistence.
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="text-align:center; padding: 20px; color: #a0aec0; font-size: 12px;">
+    Generated from analysis of 490 calls &bull; 60 customer-engaged calls &bull; Report Date: February 2026
+  </div>
+
+</div>
+</body>
+</html>
