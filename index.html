@@ -1652,25 +1652,8 @@ function initTransferCharts(){
     CT2=new Chart(e2,{type:'bar',data:{labels:['Call Dropped (16)','Already Quoted (12)','Declined Transfer (4)','Customer Busy (4)','Cancelled Move (3)','Not Interested (2)','Hostile (2)','Other Plans (1)','AI Discomfort (1)'],datasets:[{data:[16,12,4,4,3,2,2,1,1],backgroundColor:['#e74c3c','#e67e22','#f1c40f','#3498db','#607d8b','#e67e22','#e74c3c','#7f8c8d','#9b59b6'],borderWidth:0,borderRadius:4}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(30,45,71,.5)'}},y:{grid:{display:false},ticks:{color:'#e0e6f0',font:{size:10}}}}}});
 }
 
-function filterDate(date, btn) {
-    document.querySelectorAll('.date-btn').forEach(function(b){
-        b.style.background='#1e2d47';b.style.color='#e0e6f0';b.classList.remove('active');
-    });
-    btn.style.background='#4ecdc4';btn.style.color='#0c1222';btn.classList.add('active');
-
-    // Filter table rows
-    var rows=document.querySelectorAll('tr[data-date]');
-    var shown=0,hidden=0;
-    rows.forEach(function(row){
-        if(date==='all'||row.getAttribute('data-date')===date){row.style.display='';shown++;}
-        else{row.style.display='none';hidden++;}
-    });
-    var el=document.getElementById('filter-count');
-    if(date==='all'){el.textContent='';}
-    else{el.textContent='Showing '+shown+' of '+(shown+hidden)+' records';}
-
-    // Get metrics for selected date
-    var d=DD[date];if(!d)return;
+function updateDashboard(d){
+    if(!d)return;
     var s=function(id,v){var e=document.getElementById(id);if(e)e.textContent=v;};
 
     // KPIs
@@ -1774,55 +1757,109 @@ function filterDate(date, btn) {
     CC12.data.datasets[0].data=d.c12d;CC12.update();
 }
 
+// filterDate for quick buttons (single date or "all")
+function filterDate(date, btn) {
+    document.querySelectorAll('.date-btn').forEach(function(b){
+        b.style.background='#1e2d47';b.style.color='#e0e6f0';b.classList.remove('active');
+    });
+    if(btn&&btn.classList)btn.style.background='#4ecdc4',btn.style.color='#0c1222',btn.classList.add('active');
+    // Clear calendar selection
+    var fp=document.querySelector('#date-range-picker');
+    if(fp&&fp._flatpickr)fp._flatpickr.clear();
+    // Filter table rows
+    var rows=document.querySelectorAll('tr[data-date]');
+    var shown=0,hidden=0;
+    rows.forEach(function(row){
+        if(date==='all'||row.getAttribute('data-date')===date){row.style.display='';shown++;}
+        else{row.style.display='none';hidden++;}
+    });
+    var el=document.getElementById('filter-count');
+    if(el){if(date==='all')el.textContent='';else el.textContent='Showing '+shown+' of '+(shown+hidden)+' records';}
+    updateDashboard(DD[date]);
+}
+
+// Aggregate multiple DD date entries into one
+function aggregateDDKeys(keys){
+    var nf=['att','answ','xf','na','t','nc','rc','inc','scr','goo','vm','aut','dec','hos','eng','bri','wrn','pos','neu','neg','vneg','to','tn','nht'];
+    var af=['c1d','c2d','c4d','c5d','c6d','c11o','c11n','c12d'];
+    var r={};
+    nf.forEach(function(f){r[f]=0;});
+    keys.forEach(function(k){var d=DD[k];if(!d)return;nf.forEach(function(f){r[f]+=(d[f]||0);});});
+    af.forEach(function(f){
+        var first=true;
+        keys.forEach(function(k){var d=DD[k];if(!d||!d[f])return;
+            if(first){r[f]=d[f].slice();first=false;}
+            else{for(var i=0;i<d[f].length;i++){r[f][i]=(r[f][i]||0)+(d[f][i]||0);}}
+        });
+        if(first)r[f]=[];
+    });
+    // Percentages
+    r.nap=r.att>0?(r.na/r.att*100).toFixed(1)+'%':'0%';
+    r.ansp=r.att>0?(r.answ/r.att*100).toFixed(1)+'%':'0%';
+    r.ncp=r.t>0?(r.nc/r.t*100).toFixed(1)+'%':'0%';
+    r.rcp=r.t>0?(r.rc/r.t*100).toFixed(1)+'%':'0%';
+    r.top=r.rc>0?(r.to/r.rc*100).toFixed(1)+'%':'0%';
+    r.tnp=r.rc>0?(r.tn/r.rc*100).toFixed(1)+'%':'0%';
+    r.pp=r.rc>0?(r.pos/r.rc*100).toFixed(1)+'%':'0%';
+    r.np=r.rc>0?(r.neu/r.rc*100).toFixed(1)+'%':'0%';
+    r.ngp=r.rc>0?(r.neg/r.rc*100).toFixed(1)+'%':'0%';
+    r.vp=r.rc>0?(r.vneg/r.rc*100).toFixed(1)+'%':'0%';
+    r.nhp=r.rc>0?(r.nht/r.rc*100).toFixed(1)+'%':'0%';
+    // Category labels/colors/data for c3
+    var cats=[
+        {n:"Incomplete / No Engagement",k:'inc',c:"#34495e"},
+        {n:"Call Screening \u2014 Not Connected",k:'scr',c:"#5a6e8f"},
+        {n:"Google Call Assist Blocked",k:'goo',c:"#4a6fa5"},
+        {n:"Voicemail / Answering Machine",k:'vm',c:"#607d8b"},
+        {n:"Customer Reached \u2014 Declined",k:'dec',c:"#e67e22"},
+        {n:"Brief Exchange \u2014 Unclear Outcome",k:'bri',c:"#3498db"},
+        {n:"Engaged but Not Transferred",k:'eng',c:"#2ecc71"},
+        {n:"Hostile / DNC Request",k:'hos',c:"#e74c3c"},
+        {n:"Automated Phone System",k:'aut',c:"#2c3e50"},
+        {n:"Wrong Number / Misrouted",k:'wrn',c:"#9b59b6"}
+    ];
+    var cd=cats.map(function(c){return{n:c.n,v:r[c.k]||0,c:c.c};}).filter(function(c){return c.v>0;}).sort(function(a,b){return b.v-a.v;});
+    r.c3l=cd.map(function(c){return c.n+' ('+c.v+')';});
+    r.c3d=cd.map(function(c){return c.v;});
+    r.c3c=cd.map(function(c){return c.c;});
+    // cp percentages
+    r.cp=[r.inc,r.scr,r.goo,r.vm,r.aut,r.dec,r.hos,r.eng,r.bri,r.wrn].map(function(v){return r.t>0?(v/r.t*100).toFixed(1)+'%':'0%';});
+    return r;
+}
+
 // Apply date range from calendar picker
 window._fpSelectedDates=null;
 function applyDateRange(){
     var dates=window._fpSelectedDates;
     if(!dates||dates.length===0)return;
-    // Deactivate all quick-filter buttons
+    // Deactivate quick-filter buttons
     document.querySelectorAll('.date-btn').forEach(function(b){
         b.style.background='#1e2d47';b.style.color='#e0e6f0';b.classList.remove('active');
     });
-    if(dates.length===2){
-        var start=dates[0].toISOString().slice(0,10);
-        var end=dates[1].toISOString().slice(0,10);
-        // Filter table rows by date range
-        var rows=document.querySelectorAll('tr[data-date]');
-        var shown=0,hidden=0;
-        rows.forEach(function(row){
-            var rd=row.getAttribute('data-date');
-            if(rd>=start&&rd<=end){row.style.display='';shown++;}
-            else{row.style.display='none';hidden++;}
-        });
-        var el=document.getElementById('filter-count');
-        if(el)el.textContent='Showing '+shown+' of '+(shown+hidden)+' records';
-        // Update KPIs for the selected range
-        if(start===end&&DD[start]){
-            var fakeBtn=document.createElement('span');fakeBtn.style={};fakeBtn.classList={add:function(){},remove:function(){}};
-            filterDate(start,fakeBtn);
-        } else {
-            // Multi-date range: try to find matching DD key
-            if(start==='2026-01-26'&&end==='2026-02-09'){
-                var fakeBtn=document.createElement('span');fakeBtn.style={};fakeBtn.classList={add:function(){},remove:function(){}};
-                filterDate('all',fakeBtn);
-            } else if(start==='2026-01-26'&&end==='2026-01-27'){
-                // Just Jan data
-                var d=DD['all'];
-                // Use "all" minus Feb 9 data if needed, or just use "all" since it's dominated by Jan
-                var fakeBtn=document.createElement('span');fakeBtn.style={};fakeBtn.classList={add:function(){},remove:function(){}};
-                filterDate('all',fakeBtn);
-            }
-        }
-    } else if(dates.length===1){
-        var d=dates[0].toISOString().slice(0,10);
-        if(DD[d]){
-            var fakeBtn=document.createElement('span');fakeBtn.style={};fakeBtn.classList={add:function(){},remove:function(){}};
-            filterDate(d,fakeBtn);
-        }
-    }
+    var start,end;
+    if(dates.length>=2){start=dates[0].toISOString().slice(0,10);end=dates[1].toISOString().slice(0,10);}
+    else{start=end=dates[0].toISOString().slice(0,10);}
+    // Filter table rows by date range
+    var rows=document.querySelectorAll('tr[data-date]');
+    var shown=0,hidden=0;
+    rows.forEach(function(row){
+        var rd=row.getAttribute('data-date');
+        if(rd>=start&&rd<=end){row.style.display='';shown++;}
+        else{row.style.display='none';hidden++;}
+    });
+    var el=document.getElementById('filter-count');
+    if(el)el.textContent='Showing '+shown+' of '+(shown+hidden)+' records';
+    // Find matching DD date keys
+    var allKeys=Object.keys(DD).filter(function(k){return k!=='all';});
+    var matchKeys=allKeys.filter(function(k){return k>=start&&k<=end;});
+    if(matchKeys.length===0)return;
+    // Aggregate and update
+    if(matchKeys.length===allKeys.length){updateDashboard(DD['all']);}
+    else if(matchKeys.length===1){updateDashboard(DD[matchKeys[0]]);}
+    else{updateDashboard(aggregateDDKeys(matchKeys));}
     // Disable Apply button after applying
     var btn=document.getElementById('apply-date-btn');
-    btn.style.opacity='0.4';btn.style.pointerEvents='none';
+    if(btn){btn.style.opacity='0.4';btn.style.pointerEvents='none';}
 }
 
 // Initialize flatpickr calendar
