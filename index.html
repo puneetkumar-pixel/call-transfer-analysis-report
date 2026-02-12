@@ -174,8 +174,6 @@
     <button class="tab-btn" onclick="stab('dropoff',this)">Drop-Off Analysis</button>
     <button class="tab-btn" onclick="stab('sentiment',this)">Sentiment Analysis</button>
     <button class="tab-btn" onclick="stab('flagged',this)">Flagged Calls</button>
-    <button class="tab-btn" onclick="stab('issues',this)">Issues &amp; Recommendations</button>
-    <button class="tab-btn" onclick="stab('transfer',this)">Transfer Analysis (Feb 9)</button>
 </div>
 
 <div id="t-overview" class="tab-pane active">
@@ -1388,10 +1386,13 @@
     </div>
 </div>
 
-<div id="t-issues" class="tab-pane">
-    <div style="background:#1a2744;border:1px solid #2a4a7f;border-radius:8px;padding:10px 16px;margin-bottom:12px;font-size:12px;color:#6b9fff">
-        <strong>Note:</strong> Issues and recommendations are based on the Jan 26–27 drop-off analysis (2,972 calls). This tab does not change with the date filter.
+<!-- Issues & Recommendations — standalone section (based on Jan 26–27 analysis) -->
+<div style="margin-top:32px;border-top:2px solid #1e2d47;padding-top:24px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <h2 style="margin:0;font-size:18px;color:#e0e6f0;font-weight:700">Issues &amp; Recommendations</h2>
+        <span style="background:#1a2744;border:1px solid #2a4a7f;border-radius:20px;padding:4px 14px;font-size:11px;color:#6b9fff;font-weight:600">Based on Jan 26–27 analysis &middot; 2,972 calls</span>
     </div>
+
     <div class="panel">
         <h3>Top Issues by Severity</h3>
         <div class="cw-bar"><canvas id="c10"></canvas></div>
@@ -1430,197 +1431,23 @@
     </div>
     <div class="panel" style="border-left:3px solid #4ecdc4">
         <h3>Bottom Line</h3>
-        <p style="font-size:13px;line-height:1.7">Of <strong>2,972 total calls</strong>, only <strong>39 (1.3%) were successfully transferred</strong> to a human agent. <strong>1,600 hit voicemail</strong>, and of the remaining <strong>724 non-VM calls</strong>, <strong>605 customers dropped off</strong>. Transcript analysis of those 605 reveals <strong>513 (84.8%) never had real human contact</strong> &mdash; they were cut off, screened, or silent. Only <strong>92 had genuine contact</strong>, of which <strong>43 were negative</strong> and just <strong>15 were engaged/recoverable</strong>. The system also missed <strong>26 additional voicemails</strong> and <strong>13 DNC cases</strong> that should have been caught. Top priorities: (1) fix VM and DNC detection, (2) fix classification system, (3) investigate why 58% fail at the opening line.</p>
+        <p style="font-size:13px;line-height:1.7">Of <strong>2,972 total calls</strong> (Jan 26&ndash;27), only <strong>39 (1.3%) were successfully transferred</strong> to a human agent. <strong>1,600 hit voicemail</strong>, and of the remaining <strong>724 non-VM calls</strong>, <strong>605 customers dropped off</strong>. Transcript analysis of those 605 reveals <strong>513 (84.8%) never had real human contact</strong>. Top priorities: (1) fix VM and DNC detection, (2) fix classification system, (3) investigate why 58% fail at the opening line.</p>
     </div>
 </div>
 
 
 
-<div id="t-transfer" class="tab-pane">
-    <div style="background:#1a2744;border:1px solid #2a4a7f;border-radius:8px;padding:10px 16px;margin-bottom:12px;font-size:12px;color:#6b9fff">
-        <strong>Note:</strong> Transfer analysis was only conducted for the Feb 9 test run. This tab shows Feb 9 data regardless of the date filter selected above.
-    </div>
-    <div class="panel" style="border-left:3px solid #4ecdc4">
-        <h3>Transfer Analysis — Feb 9, 2026 Test Run</h3>
-        <p style="font-size:13px;line-height:1.7;margin-bottom:14px">
-            <strong>600 calls initiated</strong>, 490 answered (81.7%), 110 unanswered (18.3%). Of 490 answered calls, <strong>60 customers engaged</strong> (12.2%). Of those 60, only <strong>15 were transferred</strong> to a human agent (25.0% of engaged, <strong>3.1% of all calls</strong>).
-        </p>
-    </div>
 
-    <div class="g3" style="margin-bottom:16px">
-        <div class="sb"><div class="n" style="color:#4ecdc4">600</div><div class="sl">Calls Initiated</div></div>
-        <div class="sb"><div class="n" style="color:#3498db">490</div><div class="sl">Answered (81.7%)</div></div>
-        <div class="sb"><div class="n" style="color:#e74c3c">110</div><div class="sl">Unanswered (18.3%)</div></div>
-    </div>
-    <div class="g3" style="margin-bottom:16px">
-        <div class="sb"><div class="n" style="color:#e67e22">60</div><div class="sl">Customer Engaged (12.2%)</div></div>
-        <div class="sb"><div class="n" style="color:#2ecc71">15</div><div class="sl">Transferred (25.0% of engaged)</div></div>
-        <div class="sb"><div class="n" style="color:#e74c3c">45</div><div class="sl">Not Transferred (75.0%)</div></div>
-    </div>
 
-    <!-- Pipeline Funnel -->
-    <div class="panel">
-        <h3>Feb 9 Call Pipeline Funnel</h3>
-        <div class="fp">
-            <h4>From Dial to Transfer — 600 Calls</h4>
-            <div class="fs fs-full"><span class="fl">Total Calls Initiated</span><span class="fv">600</span></div>
-            <div class="fs fs-na"><span class="fl">&#8627; Unanswered</span><span class="fv">110 (18.3%)</span></div>
-            <div class="fs fs-ans"><span class="fl">&#8627; Answered</span><span class="fv">490 (81.7%)</span></div>
-            <div class="fs fs-vm"><span class="fl">&nbsp;&nbsp;&#8627; Voicemail Detected</span><span class="fv">295 (60.2% of answered)</span></div>
-            <div class="fs fs-nvm"><span class="fl">&nbsp;&nbsp;&#8627; Non-Voicemail</span><span class="fv">195 (39.8% of answered)</span></div>
-            <div class="fs fs-drop"><span class="fl">&nbsp;&nbsp;&nbsp;&nbsp;&#8627; Low Engagement</span><span class="fv">64 (32.8%)</span></div>
-            <div class="fs fs-drop"><span class="fl">&nbsp;&nbsp;&nbsp;&nbsp;&#8627; Customer Engaged</span><span class="fv">60 (30.8%)</span></div>
-            <div class="fs fs-xfer"><span class="fl">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#8627; Transferred to Human Agent &#10003;</span><span class="fv">15 (25.0%)</span></div>
-            <div class="fs fs-drop"><span class="fl">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#8627; Not Transferred</span><span class="fv">45 (75.0%)</span></div>
-            <div class="fs fs-dnd"><span class="fl">&nbsp;&nbsp;&nbsp;&nbsp;&#8627; Screening Detected</span><span class="fv">49 (25.1%)</span></div>
-            <div class="fs fs-dnd"><span class="fl">&nbsp;&nbsp;&nbsp;&nbsp;&#8627; Silent / Bot / DND / Wrong #</span><span class="fv">22 (11.3%)</span></div>
-        </div>
-    </div>
 
-    <!-- Transfer Outcome Charts -->
-    <div class="g2">
-        <div class="panel">
-            <h3>Transfer Outcome (60 Engaged Calls)</h3>
-            <div class="cw"><canvas id="ct1"></canvas></div>
-        </div>
-        <div class="panel">
-            <h3>Non-Transfer Reasons (45 Calls)</h3>
-            <div class="cw-bar"><canvas id="ct2"></canvas></div>
-        </div>
-    </div>
 
-    <!-- Sentiment: Transferred vs Not -->
-    <div class="panel">
-        <h3>Sentiment: Transferred vs Not Transferred</h3>
-        <table>
-            <thead><tr><th>Sentiment</th><th>Transferred (15)</th><th>%</th><th>Not Transferred (45)</th><th>%</th></tr></thead>
-            <tbody>
-                <tr><td><span class="b b-green">positive</span></td><td><strong>13</strong></td><td>87%</td><td><strong>7</strong></td><td>16%</td></tr>
-                <tr><td><span class="b b-blue">neutral</span></td><td><strong>2</strong></td><td>13%</td><td><strong>8</strong></td><td>18%</td></tr>
-                <tr><td><span class="b b-red">negative</span></td><td><strong>0</strong></td><td>0%</td><td><strong>28</strong></td><td>62%</td></tr>
-                <tr><td><span class="b b-gray">other</span></td><td><strong>0</strong></td><td>0%</td><td><strong>2</strong></td><td>4%</td></tr>
-            </tbody>
-        </table>
-        <p style="font-size:12px;color:#2ecc71;margin-top:12px;text-align:center;font-weight:600">87% of transferred calls had positive sentiment. Zero negative-sentiment calls were transferred.</p>
-    </div>
 
-    <!-- Detailed Breakdowns with Recordings -->
-    <div class="panel">
-        <h3>Successfully Transferred Calls (13 confirmed + 2 likely)</h3>
-        <details class="call-list" open><summary>&#9654; 13 Confirmed Transfers</summary><table><thead><tr><th>UUID</th><th>Sentiment</th><th>Detail</th><th>Recording</th></tr></thead><tbody>
-            <tr><td><code>f3023c21</code></td><td><span class="b b-green">positive</span></td><td>Customer agreed. Connected to specialist.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/60382c3c-85e8-41e9-888f-01b98ad364d1.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>1fada768</code></td><td><span class="b b-blue">neutral</span></td><td>Customer agreed after price discussion.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/6c9aa89d-b1f6-43b3-aad3-59916fdba620.mp3" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>ced244d1</code></td><td><span class="b b-green">positive</span></td><td>Customer agreed. Connected to specialist.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/174a285a-211f-4525-9fa2-edbfa7280f1a.mp3" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>91436ffd</code></td><td><span class="b b-green">positive</span></td><td>Call screening passed, customer agreed.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/7d5d820f-086a-46ce-a72d-67060c39a130.mp3" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>23826c63</code></td><td><span class="b b-green">positive</span></td><td>Customer agreed. Connected to specialist.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/93392757-86d5-4398-8c5d-ddb55f514246.mp3" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>7f0d99c5</code></td><td><span class="b b-green">positive</span></td><td>Call screening passed, customer agreed.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/ca3d7eb2-5a69-42e0-8b6f-fc755fccaabc.mp3" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>6e8f174f</code></td><td><span class="b b-green">positive</span></td><td>Customer agreed. Connected to specialist.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/4e930c71-26db-42df-a6ee-c0173157052a.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>1489f92d</code></td><td><span class="b b-green">positive</span></td><td>Initially declined (driving), AI persisted, agreed.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/f5a56932-d281-440f-98e6-596a5ee9a94c.mp3" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>08cc27bc</code></td><td><span class="b b-green">positive</span></td><td>Extended conversation, customer agreed.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/c9b067e7-d4f2-4e1c-acb5-e0ae821125e2.mp3" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>01d9300f</code></td><td><span class="b b-green">positive</span></td><td>Customer agreed. Connected to specialist.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/965cd005-3344-4d15-bec9-edab317c8143.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>d2e22566</code></td><td><span class="b b-blue">neutral</span></td><td>Preferred real person over AI, agreed to connect.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/ee83a8f2-da57-4330-8c10-b862d8fc62ea.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>6b94c7ab</code></td><td><span class="b b-green">positive</span></td><td>Customer agreed. Connected to specialist.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/344fed97-92d1-4dc4-8943-bdc1afd44c8e.mp3" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>aaed18f8</code></td><td><span class="b b-green">positive</span></td><td>Customer agreed. Connected to specialist.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/34b0e6e4-8561-4682-b524-a7d9382170d7.wav" target="_blank">&#9654; Listen</a></td></tr>
-        </tbody></table></details>
-        <details class="call-list"><summary>&#9654; 2 Likely Transfers (cut off mid-transfer)</summary><table><thead><tr><th>UUID</th><th>Sentiment</th><th>Detail</th><th>Recording</th></tr></thead><tbody>
-            <tr><td><code>a68cdafe</code></td><td><span class="b b-green">positive</span></td><td>AI asked transfer question but call cut off mid-sentence.</td><td><span class="b b-gray">No Recording</span></td></tr>
-            <tr><td><code>0636c81c</code></td><td><span class="b b-green">positive</span></td><td>Customer agreed, AI said "Connecting" but cut off.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/da664c5b-e499-4db8-97a1-b753aa2cb8f6.wav" target="_blank">&#9654; Listen</a></td></tr>
-        </tbody></table></details>
-    </div>
-
-    <!-- Non-transfer reasons -->
-    <div class="panel">
-        <h3>Why 45 Calls Were NOT Transferred</h3>
-
-        <details class="call-list"><summary>&#9654; Call Dropped / Cut Off — 16 calls (35.6%) <span class="b b-red">CRITICAL</span></summary><table><thead><tr><th>UUID</th><th>Sentiment</th><th>Detail</th><th>Recording</th></tr></thead><tbody>
-            <tr><td><code>a2e40ea9</code></td><td><span class="b b-red">negative</span></td><td>Customer said "No" immediately. Call ended.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/2b0bcf83-a496-4543-8f7d-ae3ab14ce0a6.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>40bbe667</code></td><td><span class="b b-green">positive</span></td><td>AI started "To ensure you get" then cut off.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/a269f266-05df-4ae9-aa4d-64b45a35c144.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>69dde55b</code></td><td><span class="b b-blue">neutral</span></td><td>Customer said "No" to details. Cut off.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/8262d275-75bb-44d5-9192-f4c04ffae5d2.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>495ddd6f</code></td><td><span class="b b-red">negative</span></td><td>Customer said "No" at start. Cut off.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/29e8d0a7-e309-4401-a259-654ff8bab78c.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>de3da82c</code></td><td><span class="b b-blue">neutral</span></td><td>Screening passed, cut off before transfer ask.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/576a7a9f-bd12-4699-997c-3a98288f288a.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>294ca700</code></td><td><span class="b b-red">negative</span></td><td>Customer said "No" to details. Cut off.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/a6830e3a-9726-49da-a88f-fadbdc7d3e97.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>8527181e</code></td><td><span class="b b-green">positive</span></td><td>Customer voicemail greeting. Cut off immediately.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/9dbabc39-69ff-4fa1-82be-cd793cced6f1.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>a022acf4</code></td><td><span class="b b-green">positive</span></td><td>AI started transfer ask then cut off.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/18e4f960-8de0-4ed8-a4b5-d8dbc5537b3e.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>e08b04a1</code></td><td><span class="b b-green">positive</span></td><td>AI made transfer ask, cut off before response.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/182cf9e4-d528-49e5-a216-808d9c1c47b3.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>af8269cc</code></td><td><span class="b b-blue">neutral</span></td><td>Short conversation. Cut off.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/f5c0ff2d-f2b7-47ff-a8ae-1d79fd5ec890.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>fe2d6899</code></td><td><span class="b b-green">positive</span></td><td>AI asked transfer question. No response. Cut off.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/7babf582-fea6-4ec9-b8e2-81aeb95d086a.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>9e1da964</code></td><td><span class="b b-green">positive</span></td><td>AI asked transfer question. No response. Cut off.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/2d7cff68-4278-43b6-8e82-44f16080ebb3.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>14c89b19</code></td><td><span class="b b-blue">neutral</span></td><td>Very short. AI mid-sentence. Cut off.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/6cfeb220-46fd-40dd-92b7-aceca938ff08.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>82757b91</code></td><td><span class="b b-blue">neutral</span></td><td>Wrong person answered. Cut off.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/f7a26e78-1dc0-4b4a-b916-9079a1f1fb04.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>1d1ff07b</code></td><td><span class="b b-green">positive</span></td><td>AI confirmed details. Cut off before transfer ask.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/426b94d1-2fa4-4e85-967b-005ba254f0af.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>546312c0</code></td><td><span class="b b-gray">empty</span></td><td>Customer said "Thank you." Transcript ended.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/b71bca42-2580-4525-9932-158c6574510e.wav" target="_blank">&#9654; Listen</a></td></tr>
-        </tbody></table></details>
-
-        <details class="call-list"><summary>&#9654; Already Has Quote / Spoke With Someone — 12 calls (26.7%) <span class="b b-orange">HIGH</span></summary><table><thead><tr><th>UUID</th><th>Sentiment</th><th>Detail</th><th>Recording</th></tr></thead><tbody>
-            <tr><td><code>bfaf6981</code></td><td><span class="b b-red">negative</span></td><td>"I already got a quote from somebody else."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/cbb451dc-a706-46e6-ac0a-532c93e9266d.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>c8680f8d</code></td><td><span class="b b-blue">neutral</span></td><td>"No. I had spoken with someone already."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/cc7646b1-1ae8-4900-b701-0bebd650f65b.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>bb614c93</code></td><td><span class="b b-red">negative</span></td><td>"I already did that. No."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/32951f87-8812-4cd9-990f-72a9348b33c1.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>55d30dc2</code></td><td><span class="b b-red">negative</span></td><td>"I've already spoken with somebody." Declined twice.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/b41c0bc5-d66c-473c-bfbb-402732857146.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>c324dbcf</code></td><td><span class="b b-red">negative</span></td><td>"I've already got my move set up and paid for."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/59dadbba-1f1f-40fe-8f1b-f8e95c899130.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>fd140557</code></td><td><span class="b b-red">negative</span></td><td>"I already spoke with someone." Went silent.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/36c439d2-e884-4768-bd2d-755450622524.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>f4435a23</code></td><td><span class="b b-red">negative</span></td><td>"I just got a quote. It's too high."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/8c14ab34-fbe4-4ba0-bcad-59273ee60fc6.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>1af6932e</code></td><td><span class="b b-red">negative</span></td><td>"No. I have it reserved already."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/565945bc-7240-41e6-9f79-2e98034d1e5f.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>1c39c45e</code></td><td><span class="b b-red">negative</span></td><td>"I've already had a quote from Budget."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/f2f92127-d0f1-4ce8-a5e7-5a106ab48ce3.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>05229071</code></td><td><span class="b b-blue">neutral</span></td><td>"No. I already talked to an agent."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/1301bec6-78bd-46b8-af41-22a8627a7c86.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>421a7718</code></td><td><span class="b b-red">negative</span></td><td>"We've already got other arrangements made."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/9c5d3e17-29a6-4d8b-9179-7f45be5247f8.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>8e59be25</code></td><td><span class="b b-red">negative</span></td><td>"Somebody already contacted me. It's taken care of."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/96efcf58-8422-4f1b-95be-c269f0e38826.wav" target="_blank">&#9654; Listen</a></td></tr>
-        </tbody></table></details>
-
-        <details class="call-list"><summary>&#9654; Explicitly Declined Transfer — 4 calls (8.9%)</summary><table><thead><tr><th>UUID</th><th>Sentiment</th><th>Detail</th><th>Recording</th></tr></thead><tbody>
-            <tr><td><code>ba080c85</code></td><td><span class="b b-red">negative</span></td><td>Said "No" to transfer twice.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/0a0b335f-a902-4340-a256-ff2ea3a2f3ad.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>f41da28c</code></td><td><span class="b b-red">negative</span></td><td>Said "No" to transfer twice.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/05fe17fa-3bb3-432d-9ee5-9b641b411273.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>196759a5</code></td><td><span class="b b-red">negative</span></td><td>Said "No" to transfer. AI pushed.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/3557489b-68ff-4940-b6e7-ca101445b61b.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>8816d3b5</code></td><td><span class="b b-red">negative</span></td><td>"No. I'm all set."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/c37d350d-268a-4012-a8b5-fd8959cd63dd.wav" target="_blank">&#9654; Listen</a></td></tr>
-        </tbody></table></details>
-
-        <details class="call-list"><summary>&#9654; Customer Busy / Can't Talk — 4 calls (8.9%)</summary><table><thead><tr><th>UUID</th><th>Sentiment</th><th>Detail</th><th>Recording</th></tr></thead><tbody>
-            <tr><td><code>c8c1df4a</code></td><td><span class="b b-blue">neutral</span></td><td>"Leave a message. I'll call you back."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/06406ad2-b621-4719-a4de-0de232cff3e7.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>117ddd26</code></td><td><span class="b b-red">negative</span></td><td>"Leave me a message."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/be269240-114f-4eaf-8614-3eb3d3195ced.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>3381f5c9</code></td><td><span class="b b-red">negative</span></td><td>"I can't right now."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/2f1ed62e-9863-4236-a3bc-bc9d08ff002e.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>0cdf2374</code></td><td><span class="b b-red">negative</span></td><td>"Can't take your call now."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/529d80bb-a1a2-451f-a5b4-b0632c22aa38.wav" target="_blank">&#9654; Listen</a></td></tr>
-        </tbody></table></details>
-
-        <details class="call-list"><summary>&#9654; Cancelled / No Longer Moving — 3 calls (6.7%)</summary><table><thead><tr><th>UUID</th><th>Sentiment</th><th>Detail</th><th>Recording</th></tr></thead><tbody>
-            <tr><td><code>a0e138ed</code></td><td><span class="b b-red">negative</span></td><td>"Cancel the whole order." Wanted to rent a truck.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/e1c43e40-e940-45b5-9e0a-5a549b2bbdc3.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>6b428996</code></td><td><span class="b b-red">negative</span></td><td>"I'm not moving anything. I must sell it."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/485497d1-57aa-4a3d-92f1-8f217ec47425.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>8ba93d46</code></td><td><span class="b b-red">negative</span></td><td>"I've canceled the order."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/23befc91-f16d-455d-bbbb-c8cddccb3b3e.wav" target="_blank">&#9654; Listen</a></td></tr>
-        </tbody></table></details>
-
-        <details class="call-list"><summary>&#9654; Not Interested / Hostile / Other — 6 calls</summary><table><thead><tr><th>UUID</th><th>Sentiment</th><th>Detail</th><th>Recording</th></tr></thead><tbody>
-            <tr><td><code>91b957ee</code></td><td><span class="b b-red">negative</span></td><td>"I'm not interested."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/e016ac7e-5b57-451c-b030-970ad2d26b38.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>c1adb76d</code></td><td><span class="b b-red">negative</span></td><td>"I'm not interested."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/51750e44-0060-4da7-9daa-640a4fa118fd.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>1d65d7fa</code></td><td><span class="b b-red">negative</span></td><td>Customer used profanity.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/ba1eb918-58fc-4af5-ab07-0bd883244af3.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>7869141d</code></td><td><span class="b b-red">negative</span></td><td>Customer uncooperative with profanity.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/e9354b34-9e83-4411-80dd-43e9156265cf.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>7c9c4bbc</code></td><td><span class="b b-red">negative</span></td><td>"We got other plans."</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/6b8c4fcf-89c4-4d98-9629-3289d4345484.wav" target="_blank">&#9654; Listen</a></td></tr>
-            <tr><td><code>6c8ecf8c</code></td><td><span class="b b-purple">confused</span></td><td>"Are you a real person?" Disconnected after learning it's AI.</td><td><a href="https://media.plivo.com/v1/Account/MANTU4OTRJNDJKNJAXOT/Recording/b757d2c1-3960-4521-9be0-d4df2a281719.wav" target="_blank">&#9654; Listen</a></td></tr>
-        </tbody></table></details>
-    </div>
-
-    <!-- Recommendations -->
-    <div class="panel">
-        <h3>Feb 9 — Key Recommendations</h3>
-        <div class="rec-grid">
-            <div class="rec"><div class="rn">1</div><div><h5>Fix Call Drops <span class="pt pt-h">Critical</span></h5><p>16 calls (35.6% of non-transfers) lost to technical issues. Many had positive sentiment. Fixing this alone could increase transfers from 15 to ~22 — a 47% improvement.</p></div></div>
-            <div class="rec"><div class="rn">2</div><div><h5>Lead Deduplication <span class="pt pt-h">Critical</span></h5><p>12 customers (26.7%) had already been contacted. Improve CRM sync to avoid redundant calls.</p></div></div>
-            <div class="rec"><div class="rn">3</div><div><h5>Add Callback Scheduling <span class="pt pt-m">High</span></h5><p>4 customers were busy. AI should offer to call back at a convenient time instead of losing the lead.</p></div></div>
-            <div class="rec"><div class="rn">4</div><div><h5>Lead Freshness Filtering <span class="pt pt-m">High</span></h5><p>3 customers had cancelled their move. Filter out stale/cancelled leads before dialing.</p></div></div>
-            <div class="rec"><div class="rn">5</div><div><h5>AI Disclosure Strategy <span class="pt pt-m">Medium</span></h5><p>1 customer disconnected after learning it's AI. Consider better disclosure or faster transfer for AI-skeptical customers.</p></div></div>
-        </div>
-    </div>
-
-    <div class="panel" style="border-left:3px solid #4ecdc4">
-        <h3>Feb 9 — Bottom Line</h3>
-        <p style="font-size:13px;line-height:1.7">Of <strong>600 calls initiated</strong>, 490 were answered (81.7%). <strong>295 hit voicemail</strong> (60.2%). Of the remaining 195 non-voicemail calls, <strong>60 customers engaged</strong> but only <strong>15 were transferred</strong> to a human agent — a <strong>3.1% effective transfer rate</strong>. The #1 issue is <strong>call drops (16 calls, 35.6%)</strong> — many positive-sentiment customers lost to technical failures. The #2 issue is <strong>lead deduplication (12 calls, 26.7%)</strong> — customers called after already being contacted. When customers are receptive, the AI transfers successfully <strong>100% of the time</strong> — the problem is upstream.</p>
-    </div>
-
-</div>
 
 <script>
 function stab(id,el){
     document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('active')});
     document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
     document.getElementById('t-'+id).classList.add('active');
-    if(id==='transfer')setTimeout(initTransferCharts,50);
     el.classList.add('active');
 }
 Chart.defaults.color='#6b7fa3';
@@ -1647,16 +1474,6 @@ var CC12=new Chart(document.getElementById('c12'),{type:'bar',data:{labels:c12Fu
 
 var DD={"all":{att:3583,answ:2842,xf:54,na:741,nap:"20.7%",ansp:"79.3%",t:665,nc:513,rc:152,ncp:"77.1%",rcp:"22.9%",inc:352,scr:146,goo:31,vm:321,aut:7,dec:30,hos:15,eng:30,bri:29,wrn:7,pos:35,neu:44,neg:58,vneg:15,c1d:[513,152],c2d:[352,146,31,321,7],c3l:["Incomplete / No Engagement (352)","Voicemail / Answering Machine (321)","Call Screening \u2014 Not Connected (146)","Google Call Assist Blocked (31)","Customer Reached \u2014 Declined (30)","Engaged but Not Transferred (30)","Brief Exchange \u2014 Unclear Outcome (29)","Hostile / DNC Request (15)","Automated Phone System (7)","Wrong Number / Misrouted (7)"],c3d:[352,321,146,31,30,30,29,15,7,7],c3c:["#34495e","#607d8b","#5a6e8f","#4a6fa5","#e67e22","#2ecc71","#3498db","#e74c3c","#2c3e50","#9b59b6"],c4d:[513,152],c5d:[352,146,31,321,7],c6d:[35,44,58,15],c11o:[18,5,6,2],c11n:[17,39,52,13],c12d:[22,15,23,13,0,6,9,5,6,2,1,2,1,1,1,1,16],to:31,tn:121,top:"20.4%",tnp:"79.6%",pp:"23.0%",np:"28.9%",ngp:"38.2%",vp:"9.9%",cp:["52.9%","22.0%","4.7%","48.3%","1.1%","4.5%","2.3%","4.5%","4.4%","1.1%"],nht:73,nhp:"48.0%"},"2026-01-26":{att:655,answ:530,xf:13,na:125,nap:"19.1%",ansp:"80.9%",t:126,nc:101,rc:25,ncp:"80.2%",rcp:"19.8%",inc:51,scr:29,goo:5,vm:14,aut:2,dec:10,hos:2,eng:6,bri:6,wrn:1,pos:6,neu:7,neg:10,vneg:2,c1d:[101,25],c2d:[51,29,5,14,2],c3l:["Incomplete / No Engagement (51)", "Call Screening \u2014 Not Connected (29)", "Voicemail / Answering Machine (14)", "Customer Reached \u2014 Declined (10)", "Brief Exchange \u2014 Unclear Outcome (6)", "Engaged but Not Transferred (6)", "Google Call Assist Blocked (5)", "Automated Phone System (2)", "Hostile / DNC Request (2)", "Wrong Number / Misrouted (1)"],c3d:[51, 29, 14, 10, 6, 6, 5, 2, 2, 1],c3c:["#34495e", "#5a6e8f", "#607d8b", "#e67e22", "#3498db", "#2ecc71", "#4a6fa5", "#2c3e50", "#e74c3c", "#9b59b6"],c4d:[101,25],c5d:[51,29,5,14,2],c6d:[6,7,10,2],c11o:[2, 0, 4, 1],c11n:[4, 7, 6, 1],c12d:[7, 2, 4, 3, 0, 0, 3, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0],to:7,tn:18,top:"28.0%",tnp:"72.0%",pp:"24.0%",np:"28.0%",ngp:"40.0%",vp:"8.0%",cp:["40.5%", "23.0%", "4.0%", "11.1%", "1.6%", "7.9%", "1.6%", "4.8%", "4.8%", "0.8%"],nht:12,nhp:"48.0%"},"2026-01-27":{att:2328,answ:1822,xf:26,na:506,nap:"21.7%",ansp:"78.3%",t:479,nc:412,rc:67,ncp:"86.0%",rcp:"14.0%",inc:301,scr:68,goo:26,vm:12,aut:5,dec:20,hos:11,eng:9,bri:23,wrn:4,pos:9,neu:27,neg:20,vneg:11,c1d:[412,67],c2d:[301,68,26,12,5],c3l:["Incomplete / No Engagement (301)", "Call Screening \u2014 Not Connected (68)", "Google Call Assist Blocked (26)", "Brief Exchange \u2014 Unclear Outcome (23)", "Customer Reached \u2014 Declined (20)", "Voicemail / Answering Machine (12)", "Hostile / DNC Request (11)", "Engaged but Not Transferred (9)", "Automated Phone System (5)", "Wrong Number / Misrouted (4)"],c3d:[301, 68, 26, 23, 20, 12, 11, 9, 5, 4],c3c:["#34495e", "#5a6e8f", "#4a6fa5", "#3498db", "#e67e22", "#607d8b", "#e74c3c", "#2ecc71", "#2c3e50", "#9b59b6"],c4d:[412,67],c5d:[301,68,26,12,5],c6d:[9,27,20,11],c11o:[3, 3, 2, 1],c11n:[6, 24, 18, 10],c12d:[15, 11, 7, 6, 0, 6, 3, 4, 3, 1, 1, 1, 1, 1, 1, 0, 0],to:9,tn:58,top:"13.4%",tnp:"86.6%",pp:"13.4%",np:"40.3%",ngp:"29.9%",vp:"16.4%",cp:["62.8%", "14.2%", "5.4%", "2.5%", "1.0%", "4.2%", "2.3%", "1.9%", "4.8%", "0.8%"],nht:31,nhp:"46.3%"},"2026-02-09":{att:600,answ:490,xf:15,na:110,nap:"18.3%",ansp:"81.7%",t:60,nc:0,rc:60,ncp:"0%",rcp:"100%",inc:0,scr:49,goo:0,vm:295,aut:0,dec:0,hos:2,eng:15,bri:0,wrn:2,pos:20,neu:10,neg:28,vneg:2,c1d:[0,60],c2d:[0,49,0,295,0],c3l:["Voicemail (295)","Low Engagement (64)","Customer Engaged (60)","Screening (49)","Silent Call (7)","Bot Detected (5)","DND (4)","Wrong Number (2)","No Detection (6)"],c3d:[295,64,60,49,7,5,4,2,6],c3c:["#607d8b","#e67e22","#2ecc71","#5a6e8f","#34495e","#9b59b6","#e74c3c","#7f8c8d","#4a6fa5"],c4d:[0,60],c5d:[0,49,0,295,0],c6d:[20,10,28,2],c11o:[13,2,0,0],c11n:[7,8,28,2],c12d:[0,2,12,4,0,0,3,0,2,0,0,1,0,0,0,0,16],to:15,tn:45,top:"25.0%",tnp:"75.0%",pp:"33.3%",np:"16.7%",ngp:"46.7%",vp:"3.3%",cp:["0%","0%","0%","49.2%","0%","0%","0.3%","0%","0%","0.3%"],nht:30,nhp:"50.0%"}};
 
-// Transfer Analysis charts (Feb 9)
-var CT1,CT2;
-function initTransferCharts(){
-    if(CT1)return;
-    var e1=document.getElementById('ct1');
-    var e2=document.getElementById('ct2');
-    if(!e1||!e2)return;
-    CT1=new Chart(e1,{type:'doughnut',data:{labels:['Confirmed Transfer (13)','Likely Transfer (2)','Not Transferred (45)'],datasets:[{data:[13,2,45],backgroundColor:['#2ecc71','#f1c40f','#e74c3c'],borderWidth:0}]},options:{cutout:'60%',plugins:{legend:{position:'bottom'}}}});
-    CT2=new Chart(e2,{type:'bar',data:{labels:['Call Dropped (16)','Already Quoted (12)','Declined Transfer (4)','Customer Busy (4)','Cancelled Move (3)','Not Interested (2)','Hostile (2)','Other Plans (1)','AI Discomfort (1)'],datasets:[{data:[16,12,4,4,3,2,2,1,1],backgroundColor:['#e74c3c','#e67e22','#f1c40f','#3498db','#607d8b','#e67e22','#e74c3c','#7f8c8d','#9b59b6'],borderWidth:0,borderRadius:4}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(30,45,71,.5)'}},y:{grid:{display:false},ticks:{color:'#e0e6f0',font:{size:10}}}}}});
-}
 
 function updateDashboard(d){
     if(!d)return;
