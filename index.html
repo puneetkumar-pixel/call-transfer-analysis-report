@@ -1829,6 +1829,8 @@ function aggregateDDKeys(keys){
 
 // Apply date range from calendar picker
 window._fpSelectedDates=null;
+// Timezone-safe date formatter (toISOString converts to UTC which shifts dates!)
+function localDateStr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function applyDateRange(){
     var dates=window._fpSelectedDates;
     if(!dates||dates.length===0)return;
@@ -1837,8 +1839,8 @@ function applyDateRange(){
         b.style.background='#1e2d47';b.style.color='#e0e6f0';b.classList.remove('active');
     });
     var start,end;
-    if(dates.length>=2){start=dates[0].toISOString().slice(0,10);end=dates[1].toISOString().slice(0,10);}
-    else{start=end=dates[0].toISOString().slice(0,10);}
+    if(dates.length>=2){start=localDateStr(dates[0]);end=localDateStr(dates[1]);}
+    else{start=end=localDateStr(dates[0]);}
     // Filter table rows by date range
     var rows=document.querySelectorAll('tr[data-date]');
     var shown=0,hidden=0;
